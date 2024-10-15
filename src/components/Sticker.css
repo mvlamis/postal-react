@@ -1,6 +1,9 @@
 .sticker {
     cursor: move;
     position: relative;
+    max-width: 800px;
+    max-height: 600px;
+    box-sizing: border-box;
 }
 
 .remove-button {
@@ -16,6 +19,20 @@
     height: 20px;
 }
 
+.edit-button {
+    position: absolute;
+    top: -20px;
+    left: -5px;
+    background: none;
+    color: blue;
+    border: none;
+    cursor: pointer;
+    display: none;
+    width: 20px;
+    height: 20px;
+}
+
+.sticker:hover .edit-button,
 .sticker:hover .remove-button {
     display: block;
 }
@@ -23,4 +40,14 @@
 .remove-button:focus {
     outline: none;
     background: none;
+}
+
+.react-resizable-handle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    bottom: 0;
+    right: 0;
+    background: url('data:image/svg+xml;base64,...') no-repeat center center;
+    cursor: se-resize;
 }

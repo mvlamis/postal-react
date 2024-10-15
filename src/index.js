@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {
-  createBrowserRouter,
   RouterProvider,
+  createHashRouter
 } from 'react-router-dom'
 
 import Me from './routes/Me';
@@ -16,7 +16,7 @@ import Search from './routes/Search';
 import Settings from './routes/Settings';
 
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/me",
     element: <Me />,

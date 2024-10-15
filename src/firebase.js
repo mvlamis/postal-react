@@ -39,14 +39,8 @@ getAuth(app).onAuthStateChanged((user) => {
 // Get a reference to the storage service, which is used to create references in your storage bucket
 const storage = getStorage();
 
-// Create a child reference
-const profileImagesRef = ref(storage, 'profile-images');
-
-// Create a reference to the file we want to download
-const profileImageRef = ref(profileImagesRef, `pRqdwxxM62TKdrND1KC3DyvE11l2.jpg`);
-
 export async function getImage(location) {
-    const imageRef = ref(profileImagesRef, location);
+    const imageRef = ref(storage, location);
     let downloadURL = '';
     await getDownloadURL(imageRef)
         .then((url) => {
