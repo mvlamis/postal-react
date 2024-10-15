@@ -1,0 +1,33 @@
+:root {
+    --navbar-height: 100px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #a27b59;
+    padding: 1rem;
+    height: var(--navbar-height);
+    font-size: larger;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.logo {
+    height: min-content;
+}
+
+.navbar-icons {
+    display: flex;
+    gap: 1.5rem;
+}

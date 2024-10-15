@@ -1,0 +1,8 @@
+.profile-section {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    justify-content: center;
+    /* padding-top: 1rem; */
+    height: calc(100vh - var(--navbar-height));
+}

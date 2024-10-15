@@ -1,0 +1,26 @@
+.sticker {
+    cursor: move;
+    position: relative;
+}
+
+.remove-button {
+    position: absolute;
+    top: -20px;
+    right: -5px;
+    background: none;
+    color: red;
+    border: none;
+    cursor: pointer;
+    display: none;
+    width: 20px;
+    height: 20px;
+}
+
+.sticker:hover .remove-button {
+    display: block;
+}
+
+.remove-button:focus {
+    outline: none;
+    background: none;
+}

@@ -1,0 +1,45 @@
+.addTextSticker {
+    /* background-color: yellow;
+    border: 1px solid #ccc; */
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    text-align: center;
+    cursor: move;
+}
+
+.addImageSticker {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    text-align: center;
+    cursor: move;
+}
+
+.addLinkSticker {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    text-align: center;
+    cursor: move;
+}
+
+.addAudioSticker {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    text-align: center;
+    cursor: move;
+}
