@@ -68,10 +68,6 @@ textarea:focus {
     outline-offset: -2px;
 }
 
-button {
-    height: 100%;
-}
-
 .backgroundTextures {
     display: flex;
     flex-direction: row;

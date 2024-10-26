@@ -4,13 +4,14 @@ import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/aut
 import { auth } from '../firebase';
 import Navbar from '../components/Navbar';
 import './SignUp.css';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, query, collection, where, getDocs } from 'firebase/firestore';
 
 const SignUp = () => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
     const [name, setName] = useState('');
     const [error, setError] = useState('');
 
@@ -30,6 +31,15 @@ const SignUp = () => {
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        // Check if username already exists
+        const usernameQuery = query(collection(db, 'users'), where('username', '==', username));
+        const querySnapshot = await getDocs(usernameQuery);
+
+        if (!querySnapshot.empty) {
+            setError('Username already in use');
+            return;
+        }
+
         await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in
@@ -40,7 +50,8 @@ const SignUp = () => {
                 const userRef = doc(db, 'users', user.uid);
                 setDoc(userRef, {
                     name: name,
-                    email: email
+                    email: email,
+                    username: username
                 });
                 navigate("/signin");
             })
@@ -96,6 +107,18 @@ const SignUp = () => {
                                     label="Email address"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="username">
+                                    Username
+                                </label>
+                                <input
+                                    type="text"
+                                    label="Username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     required
                                 />
                             </div>

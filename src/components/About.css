@@ -19,3 +19,8 @@ img {
 .bio {
     font-style: italic;
 }
+
+.username {
+    font-size: 1rem;
+    font-weight: bold;
+}

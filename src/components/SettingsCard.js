@@ -11,12 +11,14 @@ const SettingsCard = () => {
     const storage = getStorage();
     const [user, setUser] = useState({
         uid: '',
+        username: '',
         displayName: '',
         photoURL: '',
         bio: ''
     });
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
+    const [username, setUsername] = useState('');
 
     // open CustomImageEditor
     const openImageEditor = () => {
@@ -49,12 +51,14 @@ const SettingsCard = () => {
                 console.log(userData);
                 setUser({
                     uid: user.uid,
+                    username: userData.username,
                     displayName: userData.name,
                     photoURL: photoURL,
                     bio: userData.bio
                 });
                 setName(userData.name);
                 setBio(userData.bio);
+                setUsername(userData.username);
             }
         });
     }, [auth, db, storage]);
@@ -67,20 +71,26 @@ const SettingsCard = () => {
         setBio(e.target.value);
     };
 
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value);
+    };
+
     const handleSave = async () => {
         if (user.uid) {
             const userRef = doc(db, 'users', user.uid);
             try {
                 await updateDoc(userRef, {
                     name: name,
-                    bio: bio
+                    bio: bio,
+                    username: username
                 });
                 console.log('User information updated successfully');
                 // Update local state
                 setUser(prevUser => ({
                     ...prevUser,
                     displayName: name,
-                    bio: bio
+                    bio: bio,
+                    username: username
                 }));
             } catch (error) {
                 console.error('Error updating user information:', error);
@@ -106,6 +116,13 @@ const SettingsCard = () => {
                         onChange={handleNameChange}
                         placeholder="Jennifer"
                     />
+                    <h3>username</h3>
+                    <input
+                        type="text"
+                        value={username}
+                        onChange={handleUsernameChange}
+                        placeholder="bendandsnap"
+                    />
                     <h3>bio</h3>
                     <textarea
                         value={bio}
@@ -114,7 +131,7 @@ const SettingsCard = () => {
                     />
                 </div>
             </div>
-            <button onClick={handleSave}>Save Changes</button>
+            <button className="button-2" onClick={handleSave}>Save Changes</button>
             <h2>customization</h2>
             <h3>accent color</h3>
             <input type="color" />

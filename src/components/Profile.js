@@ -15,7 +15,8 @@ function Profile() {
         uid: '',
         displayName: '',
         photoURL: '',
-        bio: ''
+        bio: '',
+        username: ''
     });
 
     useEffect(() => {
@@ -45,7 +46,8 @@ function Profile() {
                     uid: user.uid,
                     displayName: userData.name,
                     photoURL: photoURL,
-                    bio: userData.bio
+                    bio: userData.bio,
+                    username: userData.username
                 });
 
             }
@@ -54,7 +56,7 @@ function Profile() {
 
     return (
         <div className="profile-section">
-            <About user={user.uid} name={user.displayName} photoURL={user.photoURL} bio={user.bio}/>
+            <About user={user.uid} name={user.displayName} photoURL={user.photoURL} bio={user.bio} username={user.username}/>
             <Posts userID={user.uid}/>
             <StickerSelection userID={user.uid}/>
         </div>

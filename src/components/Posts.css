@@ -1,7 +1,10 @@
 .sticker-book {
     display: flex;
-    gap: 1.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
     height: 100%;
+    /* background-color: aqua; */
+    align-items: center;
 }
 
 .blank-page {
@@ -10,9 +13,32 @@
     width: 800px;
     min-width: 800px;
     height: 600px;
+    min-height: 600px;
     flex-basis: 800px;
     border: 1px solid #ccc;
     position: relative;
     overflow: hidden;
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
+}
+
+.uploadbutton {
+    width: 150px;
+}
+
+.editPageButton {
+    width: 150px;
+}
+
+.page-buttons {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.leftbutton, .rightbutton {
+    background: none;
+    border: none;
+    margin-inline: 8px;
 }

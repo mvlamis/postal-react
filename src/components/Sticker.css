@@ -6,10 +6,15 @@
     box-sizing: border-box;
 }
 
+p {
+    margin-top: 0;
+    padding: 0;
+}
+
 .remove-button {
     position: absolute;
     top: -20px;
-    right: -5px;
+    right: 0px;
     background: none;
     color: red;
     border: none;
@@ -22,7 +27,7 @@
 .edit-button {
     position: absolute;
     top: -20px;
-    left: -5px;
+    left: 0px;
     background: none;
     color: blue;
     border: none;
@@ -32,8 +37,13 @@
     height: 20px;
 }
 
+.sticker:hover {
+    border: 1px solid #000;
+}
+
 .sticker:hover .edit-button,
-.sticker:hover .remove-button {
+.sticker:hover .remove-button,
+.sticker:hover .react-resizable-handle {
     display: block;
 }
 
@@ -50,4 +60,5 @@
     right: 0;
     background: url('data:image/svg+xml;base64,...') no-repeat center center;
     cursor: se-resize;
+    display: none;
 }
