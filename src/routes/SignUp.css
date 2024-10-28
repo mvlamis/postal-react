@@ -29,10 +29,10 @@ button {
     align-self: center;
 }
 
-p {
+/* p {
     text-align: center;
     margin-top: 1.5rem;
-}
+} */
 
 form {
     display: flex;

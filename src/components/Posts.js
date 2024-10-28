@@ -2,7 +2,7 @@ import './Posts.css';
 import Sticker from './Sticker';
 import { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { CircleArrowLeft, CircleArrowRight, Edit } from 'lucide-react';
 import EditPageCard from './EditPageCard';
@@ -14,6 +14,8 @@ function Posts() {
     const cardID = 'defaultCard'; // Replace with actual card ID logic
 
     const [editPageMenuIsOpen, setEditPageMenuIsOpen] = useState(false);
+
+    const [backgroundColor, setBackgroundColor] = useState('#F2F1EA');
 
     const toggleEditPageMenu = () => {
         setEditPageMenuIsOpen(!editPageMenuIsOpen);
@@ -32,6 +34,12 @@ function Posts() {
                 const stickersSnapshot = await getDocs(stickersCollection);
                 const stickersData = stickersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setStickers(stickersData);
+
+                // Get card color
+                const cardDoc = doc(db, 'users', user.uid, 'cards', cardID);
+                const cardSnapshot = await getDoc(cardDoc);
+                const cardData = cardSnapshot.data();
+                setBackgroundColor(cardData.color);
             };
 
             fetchStickers();
@@ -103,9 +111,10 @@ function Posts() {
             try {
                 const exploreCollection = collection(db, 'explore');
                 const pageData = {
-                    userId: user.uid,
+                    user: user.uid,
                     stickers: stickers,
-                    timestamp: new Date()
+                    timestamp: new Date(),
+                    color: backgroundColor
                 };
                 await addDoc(exploreCollection, pageData);
                 console.log("Page uploaded successfully");
@@ -128,10 +137,18 @@ function Posts() {
         }
     }
 
+    const handleColorChange = (color) => {
+        // change color of page in database
+        if (user) {
+            updateDoc(doc(db, 'users', user.uid, 'cards', cardID), { color });
+        }
+        setBackgroundColor(color);
+    }
+
     return (
         <div className="posts-section">
             <div className="sticker-book">
-                <div className="blank-page" id="blankPage" onDragOver={handleDragOver} onDrop={handleDrop}>
+                <div className="blank-page" id="blankPage" style={{background: backgroundColor}} onDragOver={handleDragOver} onDrop={handleDrop}>
                     {stickers.map(sticker => (
                         <Sticker key={sticker.id} sticker={sticker} onRemove={handleRemoveSticker} cardID={cardID} />
                     ))}
@@ -145,7 +162,12 @@ function Posts() {
                     <button className="uploadbutton" onClick={uploadCurrentPage}>Upload page to explore</button>
                 </div>
             </div>
-            {editPageMenuIsOpen && <EditPageCard onClose={toggleEditPageMenu} onSaved={getNewPageFromEditCard} onCleared={clearPage} />}
+            {editPageMenuIsOpen && <EditPageCard 
+                onClose={toggleEditPageMenu} 
+                onSaved={getNewPageFromEditCard} 
+                onCleared={clearPage} 
+                onColorChange={handleColorChange}
+                />}
         </div>
     );
 }

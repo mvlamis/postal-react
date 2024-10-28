@@ -29,7 +29,17 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                 }
             };
         }
-    }, [sticker.imageURL, sticker.type]);
+    }, [sticker.imageURL, sticker.type, sticker.text]);
+
+    useEffect(() => {
+        if (user) {
+            const stickerDoc = doc(db, 'users', user.uid, 'cards', cardID, 'stickers', sticker.id);
+            updateDoc(stickerDoc, {
+                width: dimensions.width,
+                height: dimensions.height
+            });
+        }
+    }, [dimensions, user, cardID, sticker.id]);
 
     const handleDragStart = (e) => {
         if (!isResizing) {
@@ -55,14 +65,14 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
         }
     };
 
-    const handleResizeStart = (e, corner) => {
+    const handleResizeStart = (e) => {
         e.stopPropagation();
         setIsResizing(true);
         setResizeStartPos({ x: e.clientX, y: e.clientY });
         setResizeStartDims({ ...dimensions });
     };
 
-    const handleResizeMove = async (e) => {
+    const handleResizeMove = (e) => {
         if (isResizing) {
             e.preventDefault();
             const deltaX = e.clientX - resizeStartPos.x;
@@ -81,7 +91,6 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
     };
 
     const handleResizeEnd = async () => {
-        console.log(cardID)
         if (isResizing && user) {
             // Update dimensions in Firebase
             const stickerDoc = doc(db, 'users', user.uid, 'cards', cardID, 'stickers', sticker.id);
@@ -112,8 +121,14 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
     const handleUpdateSticker = (updatedSticker) => {
         setDimensions({ width: updatedSticker.width, height: updatedSticker.height });
         setEditingSticker(null); // Close the edit sticker component
-        // Update the sticker state with the new image URL
-        sticker.imageURL = updatedSticker.img;
+        // Update the sticker state with the new image URL and fill mode
+        sticker.imageURL = updatedSticker.imageURL;
+        sticker.fillMode = updatedSticker.fillMode;
+    };
+
+    const handleUpdateText = (updatedSticker) => {
+        // Update the sticker state with the new text
+        sticker.text = updatedSticker.text;
     };
 
     const style = {
@@ -137,15 +152,19 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {sticker.type === 'text' && <p>{sticker.text}</p>}
+            {sticker.type === 'text' && (
+                <div
+                    dangerouslySetInnerHTML={{ __html: sticker.text }}
+                />
+            )}
             {sticker.type === 'image' && (
                 <img
                     src={sticker.imageURL}
                     alt="sticker"
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    style={{ width: '100%', height: '100%', objectFit: sticker.fillMode || 'contain' }}
                 />
             )}
-            {sticker.type === 'link' && <a href={sticker.linkURL}>{sticker.linkText}</a>}
+            {sticker.type === 'link' && <a className="linksticker" href={sticker.linkURL}>{sticker.linkText}</a>}
 
             {isHovered && (
                 <>
@@ -159,16 +178,6 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                     />
                     <div
                         className="resize-handle"
-                        style={{
-                            position: 'absolute',
-                            right: '0',
-                            bottom: '0',
-                            width: '10px',
-                            height: '10px',
-                            background: '#666',
-                            cursor: 'nwse-resize',
-                            borderRadius: '50%'
-                        }}
                         onMouseDown={(e) => handleResizeStart(e, 'se')}
                     />
                 </>
@@ -179,6 +188,7 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                     sticker={editingSticker}
                     onClose={() => setEditingSticker(null)}
                     onUpdateSticker={handleUpdateSticker}
+                    onUpdateText={handleUpdateText}
                     cardID={cardID}
                 />
             )}

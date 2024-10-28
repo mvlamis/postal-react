@@ -33,6 +33,10 @@ function EditPageCard(card) {
     const clearPageCancelled = () => {
         setConfirmDialog(false);
     }
+
+    const changePageColor = (color) => {
+        card.onColorChange(color);
+    }
     
     return (
         <div className="edit-page-card">
@@ -42,6 +46,11 @@ function EditPageCard(card) {
             </div>
             <div className="card-controls">
                 <button onClick={clearPage}>Clear Page</button>
+                {/* color change picker */}
+                <div className="color-picker">
+                    <input type="color" onChange={(e) => changePageColor(e.target.value)} />
+                    <button onClick={() => changePageColor('#F2F1EA')}>Reset Color</button>
+                </div>
             </div>
             {confirmDialog && <ConfirmPopup message="Are you sure you want to clear this page?" onConfirm={clearPageConfirmed} onCancel={clearPageCancelled} />}
         </div>

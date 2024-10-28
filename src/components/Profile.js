@@ -22,34 +22,40 @@ function Profile() {
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userRef = doc(db, 'users', user.uid);
-                const userSnap = await getDoc(userRef);
-                const userData = userSnap.data();
+                const cachedUser = localStorage.getItem(`user-${user.uid}`);
+                if (cachedUser) {
+                    setUser(JSON.parse(cachedUser));
+                } else {
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+                    const userData = userSnap.data();
 
-                // check if user has a profile image
-                let photoRef;
-                try {
-                    photoRef = ref(storage, `profile-images/${user.uid}.jpg`);
+                    // check if user has a profile image
+                    let photoRef;
+                    try {
+                        photoRef = ref(storage, `profile-images/${user.uid}.jpg`);
+                    }
+                    catch (error) {
+                        photoRef = ref(storage, 'profile-images/default.jpg');
+                    }
+
+                    // check if user has a bio
+                    if (!userData.bio) {
+                        userData.bio = 'No bio yet';
+                    }
+
+                    const photoURL = await getDownloadURL(photoRef);
+                    const userProfile = {
+                        uid: user.uid,
+                        displayName: userData.name,
+                        photoURL: photoURL,
+                        bio: userData.bio,
+                        username: userData.username
+                    };
+
+                    setUser(userProfile);
+                    localStorage.setItem(`user-${user.uid}`, JSON.stringify(userProfile));
                 }
-                catch (error) {
-                    photoRef = ref(storage, 'profile-images/default.jpg');
-                }
-
-                // check if user has a bio
-                if (!userData.bio) {
-                    userData.bio = 'No bio yet';
-                }
-
-                const photoURL = await getDownloadURL(photoRef);
-                console.log(userData);
-                setUser({
-                    uid: user.uid,
-                    displayName: userData.name,
-                    photoURL: photoURL,
-                    bio: userData.bio,
-                    username: userData.username
-                });
-
             }
         });
     }, [auth, db, storage]);
