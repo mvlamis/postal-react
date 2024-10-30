@@ -1,104 +1,81 @@
 import React, { useState, useCallback } from 'react';
 import './CustomImageEditor.css';
-import ReactCrop from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
+import AvatarEditor from 'react-avatar-editor';
+import { XCircle } from 'lucide-react';
 
+const CustomImageEditor = ({ onSave, onClose }) => {
+    const [image, setImage] = useState(null);
+    const [scale, setScale] = useState(1);
+    const [editor, setEditor] = useState(null);
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            setImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+    }
 
-const CustomImageEditor = () => {
-    const [src, setSrc] = useState(null);
-    const [crop, setCrop] = useState({ aspect: 1, width: 200 });
-    const [croppedImageUrl, setCroppedImageUrl] = useState(null);
+    const handleScaleChange = (e) => {
+        const scale = parseFloat(e.target.value);
+        setScale(scale);
+    }
 
-    const onSelectFile = (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => setSrc(reader.result));
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    };
-
-    const onImageLoaded = useCallback((img) => {
-        const aspect = 1;
-        const width = Math.min(img.width, img.height);
-        setCrop({ aspect, width });
-    }, []);
-
-    const getCroppedImg = (image, crop) => {
-        const canvas = document.createElement('canvas');
-        const scaleX = image.naturalWidth / image.width;
-        const scaleY = image.naturalHeight / image.height;
-        canvas.width = crop.width;
-        canvas.height = crop.height;
-        const ctx = canvas.getContext('2d');
-
-        ctx.drawImage(
-            image,
-            crop.x * scaleX,
-            crop.y * scaleY,
-            crop.width * scaleX,
-            crop.height * scaleY,
-            0,
-            0,
-            crop.width,
-            crop.height
-        );
-
-        return new Promise((resolve) => {
-            canvas.toBlob((blob) => {
-                if (!blob) {
-                    console.error('Canvas is empty');
-                    return;
+    const handleSave = useCallback(() => {
+        if (editor) {
+            const canvas = editor.getImage();
+            const originalWidth = canvas.width;
+            const originalHeight = canvas.height;
+            const maxDimension = 300;
+    
+            let targetWidth = originalWidth;
+            let targetHeight = originalHeight;
+    
+            if (originalWidth > maxDimension || originalHeight > maxDimension) {
+                if (originalWidth > originalHeight) {
+                    targetWidth = maxDimension;
+                    targetHeight = (originalHeight / originalWidth) * maxDimension;
+                } else {
+                    targetHeight = maxDimension;
+                    targetWidth = (originalWidth / originalHeight) * maxDimension;
                 }
-                blob.name = 'cropped.jpg';
-                const croppedImageUrl = URL.createObjectURL(blob);
-                resolve(croppedImageUrl);
-            }, 'image/jpeg');
-        });
-    };
-
-    const handleCropComplete = async (crop, pixelCrop) => {
-        if (src) {
-            const croppedImageUrl = await getCroppedImg(
-                document.querySelector('img'),
-                pixelCrop
-            );
-            setCroppedImageUrl(croppedImageUrl);
+            }
+    
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = targetWidth;
+            tempCanvas.height = targetHeight;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+    
+            tempCanvas.toBlob((blob) => {
+                onSave(blob);
+            }, 'image/jpeg', 0.7); // Compress the image to 70% quality
         }
-    };
+    }, [editor, onSave]);
 
     return (
-        <div className="flex flex-col items-center space-y-4 customImageEditor">
-            <input
-                type="file"
-                accept="image/*"
-                onChange={onSelectFile}
-                className="mb-4"
-            />
-            {src && (
-                <ReactCrop
-                    src={src}
-                    crop={crop}
-                    onChange={(newCrop) => setCrop(newCrop)}
-                    onComplete={handleCropComplete}
-                    onImageLoaded={onImageLoaded}
-                    aspect={1}
+        <div className="customImageEditor">
+            <XCircle className="closeButton" onClick={onClose} />
+            <div className="editor">
+                <AvatarEditor
+                    ref={setEditor}
+                    image={image}
+                    width={250}
+                    height={250}
+                    border={50}
+                    color={[255, 255, 255, 0.6]}
+                    scale={scale}
+                    rotate={0}
                 />
-            )}
-            {croppedImageUrl && (
-                <div className="mt-4">
-                    <h3 className="text-lg font-semibold mb-2">Cropped Image:</h3>
-                    <img src={croppedImageUrl} alt="Cropped" className="max-w-full h-auto" />
-                    <button className="button-2 mt-4" onClick={() => {
-                            const link = document.createElement('a');
-                    link.href = croppedImageUrl;
-                    link.download = 'cropped-image.jpg';
-                    link.click();
-                        }}>Save</button>
-                </div>
-            )}
+            </div>
+            <div className="controls">
+                <input type="file" accept="image/*" onChange={handleImageChange} />
+                <input type="range" min="1" max="2" step="0.01" value={scale} onChange={handleScaleChange} />
+                <button className="button-2" onClick={handleSave}>Save</button>
+            </div>
         </div>
     );
-};
+}
 
 export default CustomImageEditor;

@@ -8,20 +8,23 @@ import ConfirmPopup from './ConfirmPopup';
 function EditPageCard(card) {
     const [cardData, setCardData] = useState(card);
     const [confirmDialog, setConfirmDialog] = useState(false);
-    const user = cardData.user;
+    const [confirmMessage, setConfirmMessage] = useState('');
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [confirmCancel, setConfirmCancel] = useState(null);
 
+    const user = cardData.user;
 
     useEffect(() => {
         setCardData(card);
-    }
-    , [card]);
-
+    }, [card]);
 
     const closeEditPageCard = () => {
         card.onClose();
     }
 
     const clearPage = () => {
+        setConfirmMessage('Are you sure you want to clear the page?');
+        setConfirmAction(() => clearPageConfirmed);
         setConfirmDialog(true);
     }
 
@@ -30,12 +33,23 @@ function EditPageCard(card) {
         card.onCleared();
     }
 
-    const clearPageCancelled = () => {
-        setConfirmDialog(false);
-    }
-
     const changePageColor = (color) => {
         card.onColorChange(color);
+    }
+
+    const deletePage = () => {
+        setConfirmMessage('Are you sure you want to delete the page?');
+        setConfirmAction(() => deletePageConfirmed);
+        setConfirmDialog(true);
+    }
+
+    const deletePageConfirmed = () => {
+        setConfirmDialog(false);
+        card.onDelete();
+    }
+
+    const dialogCancelled = () => {
+        setConfirmDialog(false);
     }
     
     return (
@@ -46,13 +60,14 @@ function EditPageCard(card) {
             </div>
             <div className="card-controls">
                 <button onClick={clearPage}>Clear Page</button>
+                <button onClick={deletePage}>Delete Page</button>
                 {/* color change picker */}
                 <div className="color-picker">
                     <input type="color" onChange={(e) => changePageColor(e.target.value)} />
                     <button onClick={() => changePageColor('#F2F1EA')}>Reset Color</button>
                 </div>
             </div>
-            {confirmDialog && <ConfirmPopup message="Are you sure you want to clear this page?" onConfirm={clearPageConfirmed} onCancel={clearPageCancelled} />}
+            {confirmDialog && <ConfirmPopup message={confirmMessage} onConfirm={confirmAction} onCancel={dialogCancelled} />}
         </div>
     );
 }

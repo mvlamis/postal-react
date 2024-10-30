@@ -21,7 +21,9 @@ const Explore = () => {
     return (
         <div>
             <Navbar />
-            <h1>Explore</h1>
+            <div className="explore-header">
+                <h1>Explore</h1>
+            </div>
             <div className="explore-cards">
                 {exploreItems.map((item, index) => (
                     console.log(item),

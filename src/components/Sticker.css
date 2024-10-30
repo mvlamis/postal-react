@@ -73,6 +73,23 @@ p {
     box-sizing: border-box;
 }
 
+.audio-sticker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 10px;
+}
+
+.audio-controls {
+    justify-self: flex-start;
+    flex-shrink: 1;
+}
+
+.audio-wave {
+    flex-grow: 1;
+    /* height: 100%; */
+}
+
 .ql-font-serif {
     font-family: 'serif';
 }

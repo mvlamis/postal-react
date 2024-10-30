@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { CircleX, Edit3 } from 'lucide-react';
+// Sticker.js
+
+import React, { useState, useEffect, useRef } from 'react';
+import { CircleX, Edit3, Play, Pause } from 'lucide-react';
 import EditSticker from './EditSticker';
 import { db } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import WavesurferPlayer from '@wavesurfer/react';
 
 const Sticker = ({ sticker, onRemove, cardID }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -14,6 +17,9 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
     const [resizeStartDims, setResizeStartDims] = useState({ width: 0, height: 0 });
     const [aspectRatio, setAspectRatio] = useState(1);
     const [draggingSticker, setDraggingSticker] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [waveSurfer, setWaveSurfer] = useState(null);
+
     const auth = getAuth();
     const user = auth.currentUser;
 
@@ -39,7 +45,7 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                 height: dimensions.height
             });
         }
-    }, [dimensions, user, cardID, sticker.id]);
+    }, [dimensions, sticker.id]);
 
     const handleDragStart = (e) => {
         if (!isResizing) {
@@ -124,12 +130,38 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
         // Update the sticker state with the new image URL and fill mode
         sticker.imageURL = updatedSticker.imageURL;
         sticker.fillMode = updatedSticker.fillMode;
+        sticker.borderType = updatedSticker.borderType;
+        sticker.borderWidth = updatedSticker.borderWidth;
+        sticker.borderColor = updatedSticker.borderColor;
+        sticker.dropShadow = updatedSticker.dropShadow;
+        sticker.waveColor = updatedSticker.waveColor;
+        sticker.progressColor = updatedSticker.progressColor;
+        sticker.backgroundColor = updatedSticker.backgroundColor;
     };
 
     const handleUpdateText = (updatedSticker) => {
         // Update the sticker state with the new text
         sticker.text = updatedSticker.text;
     };
+
+    const handleUpdateAudio = (updatedSticker) => {
+        // Update the sticker state with the new audio URL and customization
+        sticker.audioURL = updatedSticker.audioURL;
+        sticker.waveColor = updatedSticker.waveColor;
+        sticker.progressColor = updatedSticker.progressColor;
+        sticker.backgroundColor = updatedSticker.backgroundColor;
+    };
+
+    const onReady = (waveSurferInstance) => {
+        setWaveSurfer(waveSurferInstance);
+    }
+
+    const onPlayPause = () => {
+        if (waveSurfer) {
+            waveSurfer.playPause();
+            setIsPlaying(!isPlaying);
+        }
+    }
 
     const style = {
         position: 'absolute',
@@ -138,7 +170,8 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
         width: `${dimensions.width}px`,
         height: `${dimensions.height}px`,
         cursor: isResizing ? 'nwse-resize' : 'move',
-        userSelect: 'none'
+        userSelect: 'none',
+        backgroundColor: sticker.backgroundColor || 'transparent' // Apply background color
     };
 
     return (
@@ -161,10 +194,37 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                 <img
                     src={sticker.imageURL}
                     alt="sticker"
-                    style={{ width: '100%', height: '100%', objectFit: sticker.fillMode || 'contain' }}
+                    style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: sticker.fillMode || 'contain', 
+                        border: `${sticker.borderWidth}px ${sticker.borderType} ${sticker.borderColor}`, 
+                        boxShadow: sticker.dropShadow ? '2px 2px 10px rgba(0, 0, 0, 0.5)' : 'none' 
+                    }}
                 />
             )}
             {sticker.type === 'link' && <a className="linksticker" href={sticker.linkURL}>{sticker.linkText}</a>}
+            {sticker.type === 'audio' && (
+                <div className="audio-sticker">
+                    <div className='audio-controls'>
+                        <button className="play-button" onClick={onPlayPause}>
+                            {isPlaying ? <Pause /> : <Play />}
+                        </button>
+                    </div>
+                    <div className='audio-wave'>
+                        <WavesurferPlayer
+                            url={sticker.audioURL}
+                            onReady={onReady}
+                            onPlay={() => setIsPlaying(true)}
+                            onPause={() => setIsPlaying(false)}
+                            waveColor={sticker.waveColor || '#F14A58'}
+                            progressColor={sticker.progressColor || '#FF5733'}
+                            responsive={true}
+                            height={dimensions.height}
+                        />
+                    </div>
+                </div>
+            )}
 
             {isHovered && (
                 <>
@@ -178,7 +238,7 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                     />
                     <div
                         className="resize-handle"
-                        onMouseDown={(e) => handleResizeStart(e, 'se')}
+                        onMouseDown={(e) => handleResizeStart(e)}
                     />
                 </>
             )}
@@ -189,6 +249,7 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                     onClose={() => setEditingSticker(null)}
                     onUpdateSticker={handleUpdateSticker}
                     onUpdateText={handleUpdateText}
+                    onUpdateAudio={handleUpdateAudio}
                     cardID={cardID}
                 />
             )}

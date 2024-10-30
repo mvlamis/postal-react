@@ -42,3 +42,8 @@
     border: none;
     margin-inline: 8px;
 }
+
+.arrows {
+    display: flex;
+    align-items: center;
+}  

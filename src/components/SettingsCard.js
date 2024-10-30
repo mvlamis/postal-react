@@ -2,7 +2,7 @@ import './SettingsCard.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import CustomImageEditor from './CustomImageEditor';
 
 const SettingsCard = () => {
@@ -21,10 +21,7 @@ const SettingsCard = () => {
     const [username, setUsername] = useState('');
 
     // open CustomImageEditor
-    const openImageEditor = () => {
-        const editor = document.querySelector('.customImageEditor');
-        editor.style.display = 'block';
-    }
+    const [showImageEditor, setShowImageEditor] = useState(false);
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
@@ -74,6 +71,22 @@ const SettingsCard = () => {
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
     };
+    
+    const handleProfilePictureChange = (blob) => {
+        const storageRef = ref(storage, `profile-images/${user.uid}.jpg`);
+        const uploadTask = uploadBytes(storageRef, blob);
+        uploadTask.then(() => {
+            getDownloadURL(storageRef).then((url) => {
+                setUser(prevUser => ({
+                    ...prevUser,
+                    photoURL: url
+                }));
+                console.log('Profile picture uploaded successfully');
+            });
+        });
+    
+        setShowImageEditor(false);
+    };
 
     const handleSave = async () => {
         if (user.uid) {
@@ -105,8 +118,8 @@ const SettingsCard = () => {
             <div className="accountSettings">
                 <div className="pictureSettings">
                     <img className="profilePicture" src={user.photoURL} alt="profile" />
-                    <button className="changePicture button2" onClick={openImageEditor}>change picture</button>
-                    <CustomImageEditor user={user} />
+                    <button className="changePicture button2" onClick={setShowImageEditor}>change picture</button>
+                    {showImageEditor && <CustomImageEditor onSave={handleProfilePictureChange} onClose={() => setShowImageEditor(false)} />}
                 </div>
                 <div className='infoSettings'>
                     <h3>name</h3>
