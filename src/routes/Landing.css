@@ -1,0 +1,100 @@
+.overlay {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 500px;
+    gap: 2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.overlay>div {
+    background: #F2F1EA;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), inset 0px 1px 4px rgba(0, 0, 0, 0.25);
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.title-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cta {
+    gap: 4rem;
+    justify-content: center;
+    flex-direction: row;
+    font-size: large;
+}
+
+.landing-logo {
+    width: 200px;
+}
+
+.landing-title {
+    font-size: 5rem;
+    color: #000;
+}
+
+.landing-subtitle {
+    font-size: 1.5rem;
+    color: #000;
+}
+
+.background {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: absolute;
+}
+
+.background-overlay {
+    background: linear-gradient(180deg, rgba(241, 241, 241, 0.5) 0%, rgba(189, 189, 189, 0.5) 100%);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    padding: 20%;
+}
+
+.background-card {
+    position: absolute;
+    background: #F2F1EA;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), inset 0px 1px 4px rgba(0, 0, 0, 0.25);
+    border: 1px solid #ccc;
+    width: 400px;
+    height: 300px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+form>div {
+    width: 100%;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0000EE;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link-button:hover {
+    color: #551A8B;
+}

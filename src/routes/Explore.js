@@ -21,14 +21,16 @@ const Explore = () => {
     return (
         <div>
             <Navbar />
-            <div className="explore-header">
-                <h1>Explore</h1>
-            </div>
-            <div className="explore-cards">
-                {exploreItems.map((item, index) => (
-                    console.log(item),
-                    <MinifiedCard key={index} title={item.title} stickers={item.stickers} user={item.user} color={item.color} />
-                ))}
+            <div className="explore-page">
+                <div className="page-header">
+                    <h1>Explore</h1>
+                </div>
+                <div className="explore-cards">
+                    {exploreItems.map((item, index) => (
+                        console.log(item),
+                        <MinifiedCard key={index} title={item.title} stickers={item.stickers} user={item.user} color={item.color} />
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -1,8 +1,11 @@
+// MinifiedCard.js
+
 import "./MinifiedCard.css";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import WavesurferPlayer from "@wavesurfer/react";
 
 // takes in a sticker book and returns it in a smaller, view-only form
 // original card size is 800x600, minified card size is 600x450
@@ -15,8 +18,6 @@ const MinifiedCard = (card) => {
     const color = cardData.color;
 
     const storage = getStorage();
-
-    // console.log(card)
     
     useEffect(() => {
         const fetchUserData = async () => {
@@ -29,9 +30,9 @@ const MinifiedCard = (card) => {
 
             let photoRef;
             
-            try {
+            if (userData.photo) {
                 photoRef = ref(storage, `profile-images/${user}.jpg`);
-            } catch (error) {
+            } else {
                 photoRef = ref(storage, 'profile-images/default.jpg');
             }
 
@@ -42,8 +43,7 @@ const MinifiedCard = (card) => {
         };
 
         fetchUserData();
-    }, []);
-    
+    }, [user, cardData, storage, card]);
 
     // initialize undefined sticker properties
     let stickerProperties = {
@@ -69,14 +69,7 @@ const MinifiedCard = (card) => {
     // render a single sticker with position and size modifications to fit the minified card
     const renderSticker = (sticker, index) => {
         // initialize undefined sticker properties
-        let stickerProperties = {
-            x: 0,
-            y: 0,
-            color: "black",
-            imageURL: "",
-            width: 0,
-            height: 0
-        };
+        let stickerProperties
 
         // get sticker properties
         if (sticker) {
@@ -86,30 +79,101 @@ const MinifiedCard = (card) => {
                 color: sticker.color,
                 imageURL: sticker.imageURL,
                 width: sticker.width,
-                height: sticker.height
+                height: sticker.height,
+                objectFit: sticker.objectFit,
+
             };
         }
 
         // calculate new sticker properties
+        const scaleFactor = 0.75; // Original scaling factor
         const newStickerProperties = {
-            x: stickerProperties.x * 0.75,
-            y: stickerProperties.y * 0.75,
+            x: stickerProperties.x * scaleFactor,
+            y: stickerProperties.y * scaleFactor,
             color: stickerProperties.color,
             imageURL: stickerProperties.imageURL,
-            width: stickerProperties.width * 0.75,
-            height: stickerProperties.height * 0.75
+            width: stickerProperties.width * scaleFactor,
+            height: stickerProperties.height * scaleFactor
         };
 
         // render stickers with new properties
         if (sticker.type === "text") {
             return (
-                <div className="minified-sticker" style={{ position: 'absolute', left: newStickerProperties.x, top: newStickerProperties.y, color: newStickerProperties.color }}>
+                <div 
+                    key={index}
+                    className="minified-sticker text-sticker" 
+                    style={{ 
+                        position: 'absolute', 
+                        left: newStickerProperties.x, 
+                        top: newStickerProperties.y, 
+                        color: newStickerProperties.color,
+                        maxWidth: `${newStickerProperties.width}px`,
+                        fontSize: '0.75rem' // Adjust font size as needed
+                    }}
+                >
                     <div dangerouslySetInnerHTML={{ __html: sticker.text }} />
                 </div>
             );
         } else if (sticker.type === "image") {
             return (
-                <img className="minified-sticker" style={{ position: 'absolute', left: newStickerProperties.x, top: newStickerProperties.y, width: newStickerProperties.width, height: newStickerProperties.height }} src={newStickerProperties.imageURL} alt="sticker" />
+                <img 
+                    key={index}
+                    className="minified-sticker image-sticker" 
+                    style={{ 
+                        position: 'absolute', 
+                        left: newStickerProperties.x, 
+                        top: newStickerProperties.y, 
+                        width: newStickerProperties.width, 
+                        height: newStickerProperties.height,
+                        objectFit: sticker.objectFit || 'contain',
+                        border: `${sticker.borderWidth}px ${sticker.borderType} ${sticker.borderColor}`,
+                        boxShadow: sticker.dropShadow ? '2px 2px 10px rgba(0, 0, 0, 0.5)' : 'none',
+                        backgroundColor: sticker.backgroundColor
+                    }} 
+                    src={newStickerProperties.imageURL} 
+                    alt="sticker" 
+                />
+            );
+        } else if (sticker.type === "link") {
+            return (
+                <a 
+                    key={index}
+                    className="linksticker minified-sticker link-stick" 
+                    href={sticker.linkURL} 
+                    style={{ 
+                        position: 'absolute', 
+                        left: newStickerProperties.x, 
+                        top: newStickerProperties.y,
+                        width: `${newStickerProperties.width}px`,
+                        height: `${newStickerProperties.height}px`,
+                        fontSize: '0.75rem', // Adjust font size as needed
+                        wordWrap: 'break-word' // Ensure text wraps within maxWidth
+                    }}
+                >
+                    {sticker.linkText}
+                </a>
+            );
+        } else if (sticker.type === "audio") {
+            return (
+                <div 
+                    key={index}
+                    className="audio-sticker minified-sticker" 
+                    style={{ 
+                        position: 'absolute', 
+                        left: newStickerProperties.x, 
+                        top: newStickerProperties.y,
+                        width: newStickerProperties.width,
+                        height: newStickerProperties.height 
+                    }}
+                >
+                    <WavesurferPlayer
+                        src={sticker.audioURL}
+                        options={{
+                            waveColor: sticker.waveColor,
+                            progressColor: sticker.progressColor
+                        }}
+                    />
+                </div>
             );
         }
     }
@@ -121,7 +185,6 @@ const MinifiedCard = (card) => {
                 <h1>{cardData.title}</h1>
                 <img src={cardData.profilepicture} alt="profile picture" />
                 <h2>{cardData.username}</h2>
-
             </div>
             <div className="minified-sticker-book" style={{ background: cardData.color }}>
                 {renderStickers()}

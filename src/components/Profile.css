@@ -1,8 +1,87 @@
+/* Profile.css */
 .profile-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
-    flex-wrap: nowrap;
-    gap: 1rem;
     justify-content: center;
-    /* padding-top: 1rem; */
-    height: calc(100vh - var(--navbar-height));
+}
+
+/* Main Content Adjustments */
+.main-content {
+    flex-shrink: 1;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: margin 0.3s ease;
+    transform: translate3d(0,0,0); /* Add for better performance */
+    will-change: transform; /* Add for better performance */
+}
+
+/* When About Pane is expanded */
+.with-about {
+    margin-left: 250px;
+}
+
+/* When Sticker Pane is expanded */
+.with-sticker {
+    margin-right: 250px;
+}
+
+.pane {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    /* background-color: #f0f0f0; */
+    transition: transform 0.3s ease;
+    z-index: 1;
+    overflow: auto;
+    background: linear-gradient(180deg, rgba(241, 241, 241, 0.5) 0%, rgba(189, 189, 189, 0.5) 100%);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.about-pane {
+    left: 0;
+    transform: translateX(-100%);
+}
+
+.about-pane.expanded {
+    transform: translateX(0);
+}
+
+.sticker-pane {
+    right: 0;
+    transform: translateX(100%);
+}
+
+.sticker-pane.expanded {
+    transform: translateX(0);
+}
+
+.about-toggle {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    transition: left 0.3s ease;
+}
+
+.sticker-toggle {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    transition: right 0.3s ease;
+}
+
+/* Add these new classes */
+.about-toggle.pane-expanded {
+    left: 270px; /* 250px (pane width) + 20px */
+}
+
+.sticker-toggle.pane-expanded {
+    right: 270px; /* 250px (pane width) + 20px */
 }

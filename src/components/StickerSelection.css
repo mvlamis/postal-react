@@ -1,14 +1,13 @@
 .sticker-selection {
     flex-shrink: 1;
-    background-color: white;
     width: auto;
-    border: 1px solid #ccc;
-    border-radius: 15px;
+    height: 100%;
     padding: 10px;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     overflow-y: auto;
+    z-index: 100;
 }
 .sticker-icons {
     display: flex;

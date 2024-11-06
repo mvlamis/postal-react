@@ -102,6 +102,7 @@ button.button-2 {
   text-shadow: 0 1px 1px #116ee7;
   transition-property: border-color, transform, background-color;
   transition-duration: 0.2s;
+  text-decoration: none;
 }
 
 button.button-2:hover {
@@ -114,6 +115,34 @@ button.button-2:active {
   background-color: #0048d5;
 }
 
+button.button-3 {
+  padding: 8px 16px;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  color: #555;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1),
+    -3px -3px 10px rgba(255, 255, 255, 0.8);
+}
+
+button.button-3:hover {
+  background: linear-gradient(145deg, #f0f0f0, #ffffff);
+  transform: translateY(-1px);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15),
+    -4px -4px 12px rgba(255, 255, 255, 0.9);
+  color: #000;
+}
+
+button.button-3:active {
+  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  transform: translateY(1px);
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1),
+    -2px -2px 8px rgba(255, 255, 255, 0.7);
+}
 
 .profilePicture {
   width: 150px;
@@ -121,4 +150,16 @@ button.button-2:active {
   object-fit: cover;
   margin: 0 auto;
   display: block;
+}
+
+.page-header {
+  background-color: #F2F1EA;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), inset 0px 1px 4px rgba(0, 0, 0, 0.25);
+  padding: 1rem;
+  margin: 0 auto;
+  /* margin-top: 2rem; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }

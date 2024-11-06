@@ -171,7 +171,9 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
         height: `${dimensions.height}px`,
         cursor: isResizing ? 'nwse-resize' : 'move',
         userSelect: 'none',
-        backgroundColor: sticker.backgroundColor || 'transparent' // Apply background color
+        backgroundColor: sticker.backgroundColor || 'transparent',
+        transform: 'translate3d(0,0,0)', // Add for better performance
+        willChange: 'transform' // Add for better performance
     };
 
     return (

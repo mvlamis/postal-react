@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
-import Navbar from '../components/Navbar';
-import './SignUp.css';
 import { getFirestore, doc, setDoc, query, collection, where, getDocs } from 'firebase/firestore';
 
-const SignUp = () => {
+const SignUpModal = (props) => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -79,10 +77,6 @@ const SignUp = () => {
     };
 
     return (
-        <main >
-            <Navbar />
-            <section>
-                <div>
                     <div className='signUpSheet'>
                         <form>
                             <div>
@@ -143,22 +137,22 @@ const SignUp = () => {
                             >
                                 Sign up
                             </button>
+                            <p>
+                                Already have an account?{' '}
+                                <button
+                                    className="link-button"
+                                    onClick={() => props.onAuthStageChange('signin')}
+                                >
+                                    Sign in
+                                </button>
+                            </p>
+                            <p className="error">{error}</p>
 
                         </form>
 
-                        <p>
-                            Already have an account?{' '}
-                            <NavLink to="/signin" >
-                                Sign in
-                            </NavLink>
-                        </p>
 
-                        <p className="error">{error}</p>
                     </div>
-                </div>
-            </section>
-        </main>
     )
 }
 
-export default SignUp
+export default SignUpModal

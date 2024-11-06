@@ -197,14 +197,14 @@ function Posts() {
                     ))}
                 </div>
                 <div className="page-buttons">
-                    <button className="editPageButton" onClick={toggleEditPageMenu}>Edit page</button>
+                    <button className="editPageButton button-3" onClick={toggleEditPageMenu}>Edit page</button>
                     <div className='arrows'>
                         <CircleArrowLeft className="leftbutton" size={40} onClick={switchToPreviousCard} />
                         <div className="cardNumber">{currentCardIndex + 1} / {cards.length}</div>
                         <CircleArrowRight className="rightbutton" size={40} onClick={switchToNextCard} />
                     </div>
-                    <button className="uploadbutton" onClick={uploadCurrentPage}>Upload page to explore</button>
-                    <button className="newCardButton" onClick={addNewCard}>Add New Card</button>
+                    <button className="uploadbutton button-3" onClick={uploadCurrentPage}>Upload page to explore</button>
+                    <button className="newCardButton button-3" onClick={addNewCard}>Add New Card</button>
                 </div>
             </div>
             {editPageMenuIsOpen && <EditPageCard 

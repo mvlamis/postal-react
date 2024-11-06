@@ -8,12 +8,11 @@ import {
 } from 'react-router-dom'
 
 import Me from './routes/Me';
-import SignIn from './routes/SignIn';
-import SignUp from './routes/SignUp';
 import Explore from './routes/Explore';
 import Friends from './routes/Friends';
 import Search from './routes/Search';
 import Settings from './routes/Settings';
+import Landing from './routes/Landing';
 
 
 const router = createHashRouter([
@@ -22,11 +21,7 @@ const router = createHashRouter([
     element: <Me />,
   },
   { path: "/",
-    element: <SignIn />,
-  },
-  {
-    path: "/signin",
-    element: <SignIn />,
+    element: <Landing />,
   },
   {
     path: "/explore",
@@ -43,11 +38,7 @@ const router = createHashRouter([
   {
     path: "/settings",
     element: <Settings />,
-  },
-  {
-    path: "/signup",
-    element: <SignUp />,
-  },
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

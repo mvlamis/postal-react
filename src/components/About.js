@@ -2,7 +2,11 @@ import './About.css';
 
 function About({ user, photoURL, bio, name, username }) {
     if (!user) {
-        return <div>Loading...</div>;
+        return (
+        <div className='about'>
+                <div className="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+        );
     }
 
     return (

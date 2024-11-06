@@ -1,11 +1,10 @@
-import './SignUp.css'
-import Navbar from "../components/Navbar"
+// import './SignUp.css'
 import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 import { NavLink, useNavigate } from 'react-router-dom'
 
-const SignIn = () => {
+const SignInModal = (props) => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -58,9 +57,6 @@ const SignIn = () => {
 
     return (
         <>
-            <main >
-                <Navbar />
-                <section>
                     <div className='signUpSheet'>
                         <form>
                             <div>
@@ -98,20 +94,22 @@ const SignIn = () => {
 
                             <p className='error'>{readableError}</p>
 
+                            <p>
+                                No account yet? {' '}
+                                <button
+                                    className="link-button"
+                                    onClick={() => props.onAuthStageChange('signup')}
+                                >
+                                    Sign up
+                                </button>
+                            </p>
+
                         </form>
 
-                        <p className="text-sm text-white text-center">
-                            No account yet? {' '}
-                            <NavLink to="/signup">
-                                Sign up
-                            </NavLink>
-                        </p>
 
                     </div>
-                </section>
-            </main>
         </>
     )
 }
 
-export default SignIn
+export default SignInModal

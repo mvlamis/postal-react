@@ -18,6 +18,8 @@ function Profile() {
         bio: '',
         username: ''
     });
+    const [isAboutCollapsed, setIsAboutCollapsed] = useState(true);
+    const [isStickerCollapsed, setIsStickerCollapsed] = useState(true);
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
@@ -30,16 +32,13 @@ function Profile() {
                     const userSnap = await getDoc(userRef);
                     const userData = userSnap.data();
 
-                    // check if user has a profile image
                     let photoRef;
-                    try {
+                    if (userData.photo) {
                         photoRef = ref(storage, `profile-images/${user.uid}.jpg`);
-                    }
-                    catch (error) {
+                    } else {
                         photoRef = ref(storage, 'profile-images/default.jpg');
                     }
 
-                    // check if user has a bio
                     if (!userData.bio) {
                         userData.bio = 'No bio yet';
                     }
@@ -60,11 +59,51 @@ function Profile() {
         });
     }, [auth, db, storage]);
 
+    // Determine classes for main-content
+    const mainContentClass = `
+        main-content
+        ${!isAboutCollapsed ? 'with-about' : ''}
+        ${!isStickerCollapsed ? 'with-sticker' : ''}
+    `;
+
     return (
         <div className="profile-section">
-            <About user={user.uid} name={user.displayName} photoURL={user.photoURL} bio={user.bio} username={user.username}/>
-            <Posts userID={user.uid}/>
-            <StickerSelection userID={user.uid}/>
+            {/* About Toggle Button */}
+            <button
+                className={`button-3 about-toggle ${!isAboutCollapsed ? 'pane-expanded' : ''}`}
+                onClick={() => setIsAboutCollapsed(!isAboutCollapsed)}
+            >
+                {isAboutCollapsed ? 'Show About' : 'Hide About'}
+            </button>
+
+            {/* About Pane */}
+            <div className={`pane about-pane ${isAboutCollapsed ? 'collapsed' : 'expanded'}`}>
+                <About
+                    user={user.uid}
+                    name={user.displayName}
+                    photoURL={user.photoURL}
+                    bio={user.bio}
+                    username={user.username}
+                />
+            </div>
+
+            {/* Main Content */}
+            <div className={mainContentClass}>
+                <Posts userID={user.uid} />
+            </div>
+
+            {/* Sticker Toggle Button */}
+            <button
+                className={`button-3 sticker-toggle ${!isStickerCollapsed ? 'pane-expanded' : ''}`}
+                onClick={() => setIsStickerCollapsed(!isStickerCollapsed)}
+            >
+                {isStickerCollapsed ? 'Show Stickers' : 'Hide Stickers'}
+            </button>
+
+            {/* Sticker Pane */}
+            <div className={`pane sticker-pane ${isStickerCollapsed ? 'collapsed' : 'expanded'}`}>
+                <StickerSelection userID={user.uid} />
+            </div>
         </div>
     );
 }

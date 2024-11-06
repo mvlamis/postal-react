@@ -1,9 +1,10 @@
 import './SettingsCard.css';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, deleteUser } from 'firebase/auth';
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc, deleteObject, deleteDocs, getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import CustomImageEditor from './CustomImageEditor';
+import ConfirmPopup from './ConfirmPopup';
 
 const SettingsCard = () => {
     const auth = getAuth();
@@ -20,6 +21,8 @@ const SettingsCard = () => {
     const [bio, setBio] = useState('');
     const [username, setUsername] = useState('');
 
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
     // open CustomImageEditor
     const [showImageEditor, setShowImageEditor] = useState(false);
 
@@ -32,10 +35,9 @@ const SettingsCard = () => {
 
                 // check if user has a profile image
                 let photoRef;
-                try {
+                if (userData.photo) {
                     photoRef = ref(storage, `profile-images/${user.uid}.jpg`);
-                }
-                catch (error) {
+                } else {
                     photoRef = ref(storage, 'profile-images/default.jpg');
                 }
 
@@ -111,6 +113,31 @@ const SettingsCard = () => {
         }
     };
 
+    const handleUserDelete = async () => {
+        if (user.uid) {
+            try {
+                // remove from firebase auth
+                await deleteUser(auth.currentUser);
+                // remove from firestore
+                const userRef = doc(db, 'users', user.uid);
+                await deleteDoc(userRef);
+                // remove from storage
+                const photoRef = ref(storage, `profile-images/${user.uid}.jpg`);
+                await deleteDoc(photoRef);
+                // check for cards in explore
+                const exploreRef = ref(db, 'explore');
+                const exploreSnapshot = await getDocs(exploreRef);
+                exploreSnapshot.forEach(async (doc) => {
+                    if (doc.data().user === user.uid) {
+                        await deleteDoc(doc.ref);
+                    }
+                });
+            } catch (error) {
+                console.error('Error deleting user:', error);
+            }
+        }
+    }
+
     return (
         <div className="settingsCard">
             <h1>settings</h1>
@@ -118,7 +145,7 @@ const SettingsCard = () => {
             <div className="accountSettings">
                 <div className="pictureSettings">
                     <img className="profilePicture" src={user.photoURL} alt="profile" />
-                    <button className="changePicture button2" onClick={setShowImageEditor}>change picture</button>
+                    <button className="changePicture button-3" onClick={setShowImageEditor}>change picture</button>
                     {showImageEditor && <CustomImageEditor onSave={handleProfilePictureChange} onClose={() => setShowImageEditor(false)} />}
                 </div>
                 <div className='infoSettings'>
@@ -155,6 +182,7 @@ const SettingsCard = () => {
                 <img src="https://via.placeholder.com/50" alt="texture3" />
                 <img src="https://via.placeholder.com/50" alt="texture4" />
             </div>
+            <button className="button-3" onClick={() => setShowConfirmDelete(true)}>Delete Account</button>
         </div>
     );
 }
