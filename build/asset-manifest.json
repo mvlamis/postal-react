@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "./static/css/main.8496d38f.css",
+    "main.js": "./static/js/main.b6ba4800.js",
+    "static/js/453.b85ef744.chunk.js": "./static/js/453.b85ef744.chunk.js",
+    "static/media/woodtexture.jpg": "./static/media/woodtexture.4273cb886eaa338e5886.jpg",
+    "static/media/logo@4x.png": "./static/media/logo@4x.7e50a22f23048724222b.png",
+    "index.html": "./index.html",
+    "main.8496d38f.css.map": "./static/css/main.8496d38f.css.map",
+    "main.b6ba4800.js.map": "./static/js/main.b6ba4800.js.map",
+    "453.b85ef744.chunk.js.map": "./static/js/453.b85ef744.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8496d38f.css",
+    "static/js/main.b6ba4800.js"
+  ]
+}
