@@ -4,6 +4,7 @@
     max-width: 800px;
     max-height: 600px;
     box-sizing: border-box;
+    transform-origin: center;
 }
 
 p {
@@ -53,13 +54,81 @@ p {
 
 .resize-handle {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 10px;
-    height: 10px;
-    background: #666;
+    right: -4px;
+    bottom: -4px;
+    width: 16px;
+    height: 16px;
     cursor: nwse-resize;
+    display: none;
+    background: white;
+    border: 1.5px solid #666;
     border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.15s ease;
+}
+
+.resize-handle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid #666;
+    border-bottom: 2px solid #666;
+}
+
+.resize-handle:hover {
+    transform: scale(1.1);
+    background: #f8f8f8;
+}
+
+.rotate-handle {
+    position: absolute;
+    left: -4px;
+    bottom: -4px;
+    width: 16px;
+    height: 16px;
+    cursor: grab;
+    display: none;
+    background: white;
+    border: 1.5px solid #666;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.15s ease;
+}
+
+.rotate-handle::before {
+    content: '↻';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    font-size: 16px;
+    color: #666;
+    line-height: 1; /* Add line-height to help with vertical centering */
+    display: flex; /* Use flexbox for better centering */
+    align-items: center;
+    justify-content: center;
+}
+
+.rotate-handle:hover {
+    transform: scale(1.1);
+    background: #f8f8f8;
+}
+
+.sticker:hover .resize-handle,
+.sticker:hover .rotate-handle {
+    display: block;
+}
+
+.rotate-handle:active {
+    cursor: grabbing;
+}
+
+.sticker:hover .rotate-handle {
+    display: block;
 }
 
 .linksticker {

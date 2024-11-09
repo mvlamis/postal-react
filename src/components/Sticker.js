@@ -19,6 +19,9 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
     const [draggingSticker, setDraggingSticker] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [waveSurfer, setWaveSurfer] = useState(null);
+    const [rotation, setRotation] = useState(sticker.rotation || 0);
+    const rotationRef = useRef(null);
+    const stickerRef = useRef(null);
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -38,14 +41,15 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
     }, [sticker.imageURL, sticker.type, sticker.text]);
 
     useEffect(() => {
-        if (user) {
+        if (user && cardID && sticker.id && cardID === sticker.cardID) { // Add cardID check
             const stickerDoc = doc(db, 'users', user.uid, 'cards', cardID, 'stickers', sticker.id);
             updateDoc(stickerDoc, {
                 width: dimensions.width,
-                height: dimensions.height
+                height: dimensions.height,
+                rotation
             });
         }
-    }, [dimensions, sticker.id]);
+    }, [dimensions, rotation, user, cardID, sticker.id, sticker.cardID]);
 
     const handleDragStart = (e) => {
         if (!isResizing) {
@@ -163,6 +167,37 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
         }
     }
 
+    const handleRotateStart = (e) => {
+        e.preventDefault();
+        if (stickerRef.current) {
+            const rect = stickerRef.current.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const initialAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+            rotationRef.current = {
+                centerX,
+                centerY,
+                initialAngle,
+                startRotation: rotation
+            };
+            window.addEventListener('mousemove', handleRotating);
+            window.addEventListener('mouseup', handleRotateEnd);
+        }
+    };
+
+    const handleRotating = (e) => {
+        const { centerX, centerY, initialAngle, startRotation } = rotationRef.current;
+        const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+        const deltaAngle = currentAngle - initialAngle;
+        setRotation(startRotation + deltaAngle);
+    };
+
+    const handleRotateEnd = () => {
+        window.removeEventListener('mousemove', handleRotating);
+        window.removeEventListener('mouseup', handleRotateEnd);
+        // Rotation already updated in state and Firebase via useEffect
+    };
+
     const style = {
         position: 'absolute',
         left: `${draggingSticker ? draggingSticker.x : sticker.x}px`,
@@ -172,8 +207,9 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
         cursor: isResizing ? 'nwse-resize' : 'move',
         userSelect: 'none',
         backgroundColor: sticker.backgroundColor || 'transparent',
-        transform: 'translate3d(0,0,0)', // Add for better performance
-        willChange: 'transform' // Add for better performance
+        transform: `rotate(${rotation}deg)`,
+        transformOrigin: 'center',
+        willChange: 'transform'
     };
 
     return (
@@ -186,6 +222,7 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
             style={style}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            ref={stickerRef}
         >
             {sticker.type === 'text' && (
                 <div
@@ -241,6 +278,10 @@ const Sticker = ({ sticker, onRemove, cardID }) => {
                     <div
                         className="resize-handle"
                         onMouseDown={(e) => handleResizeStart(e)}
+                    />
+                    <div
+                        className="rotate-handle"
+                        onMouseDown={handleRotateStart}
                     />
                 </>
             )}

@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 function Profile() {
     const auth = getAuth();
@@ -18,8 +19,8 @@ function Profile() {
         bio: '',
         username: ''
     });
-    const [isAboutCollapsed, setIsAboutCollapsed] = useState(true);
-    const [isStickerCollapsed, setIsStickerCollapsed] = useState(true);
+    const [isAboutCollapsed, setIsAboutCollapsed] = useState(false);
+    const [isStickerCollapsed, setIsStickerCollapsed] = useState(false);
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
@@ -70,10 +71,10 @@ function Profile() {
         <div className="profile-section">
             {/* About Toggle Button */}
             <button
-                className={`button-3 about-toggle ${!isAboutCollapsed ? 'pane-expanded' : ''}`}
+                className={`about-toggle ${!isAboutCollapsed ? 'pane-expanded' : ''}`}
                 onClick={() => setIsAboutCollapsed(!isAboutCollapsed)}
             >
-                {isAboutCollapsed ? 'Show About' : 'Hide About'}
+                {isAboutCollapsed ? <ChevronRight /> : <ChevronLeft />}
             </button>
 
             {/* About Pane */}
@@ -94,10 +95,10 @@ function Profile() {
 
             {/* Sticker Toggle Button */}
             <button
-                className={`button-3 sticker-toggle ${!isStickerCollapsed ? 'pane-expanded' : ''}`}
+                className={`sticker-toggle ${!isStickerCollapsed ? 'pane-expanded' : ''}`}
                 onClick={() => setIsStickerCollapsed(!isStickerCollapsed)}
             >
-                {isStickerCollapsed ? 'Show Stickers' : 'Hide Stickers'}
+                {isStickerCollapsed ? <ChevronLeft /> : <ChevronRight />}
             </button>
 
             {/* Sticker Pane */}

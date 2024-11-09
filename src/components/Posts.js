@@ -10,9 +10,12 @@ import EditPageCard from './EditPageCard';
 function Posts() {
     const [cards, setCards] = useState([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
+    const [nextCardIndex, setNextCardIndex] = useState(null);
     const [stickers, setStickers] = useState([]);
     const [backgroundColor, setBackgroundColor] = useState('#F2F1EA');
     const [editPageMenuIsOpen, setEditPageMenuIsOpen] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [animationDirection, setAnimationDirection] = useState(null);
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -52,9 +55,14 @@ function Posts() {
     useEffect(() => {
         if (user && currentCardID) {
             const fetchStickers = async () => {
+                setStickers([]); // Clear stickers first
                 const stickersCollection = collection(db, 'users', user.uid, 'cards', currentCardID, 'stickers');
                 const stickersSnapshot = await getDocs(stickersCollection);
-                const stickersData = stickersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const stickersData = stickersSnapshot.docs.map(doc => ({ 
+                    id: doc.id, 
+                    cardID: currentCardID, // Add cardID to each sticker
+                    ...doc.data() 
+                }));
                 setStickers(stickersData);
 
                 const cardDoc = doc(db, 'users', user.uid, 'cards', currentCardID);
@@ -167,14 +175,30 @@ function Posts() {
     }
 
     const switchToPreviousCard = () => {
-        if (currentCardIndex > 0) {
-            setCurrentCardIndex(currentCardIndex - 1);
+        if (currentCardIndex > 0 && !isAnimating) {
+            setIsAnimating(true);
+            setAnimationDirection('left');
+            setNextCardIndex(currentCardIndex - 1);
+            setTimeout(() => {
+                setCurrentCardIndex(currentCardIndex - 1);
+                setNextCardIndex(null);
+                setIsAnimating(false);
+                setAnimationDirection(null);
+            }, 600); // Full animation duration
         }
     }
 
     const switchToNextCard = () => {
-        if (currentCardIndex < cards.length - 1) {
-            setCurrentCardIndex(currentCardIndex + 1);
+        if (currentCardIndex < cards.length - 1 && !isAnimating) {
+            setIsAnimating(true);
+            setAnimationDirection('right');
+            setNextCardIndex(currentCardIndex + 1);
+            setTimeout(() => {
+                setCurrentCardIndex(currentCardIndex + 1);
+                setNextCardIndex(null);
+                setIsAnimating(false);
+                setAnimationDirection(null);
+            }, 600); // Full animation duration
         }
     }
 
@@ -191,10 +215,42 @@ function Posts() {
     return (
         <div className="posts-section">
             <div className="sticker-book">
-                <div className="blank-page" id="blankPage" style={{background: backgroundColor}} onDragOver={handleDragOver} onDrop={handleDrop}>
-                    {stickers.map(sticker => (
-                        <Sticker key={sticker.id} sticker={sticker} onRemove={handleRemoveSticker} cardID={currentCardID} />
-                    ))}
+                <div className="page-content">
+                    {currentCardIndex > 0 && (
+                        <div 
+                            className={`blank-page previous ${
+                                animationDirection === 'left' ? 'moving-to-top' : ''
+                            }`}
+                            style={{background: cards[currentCardIndex - 1]?.color || '#F2F1EA'}}
+                        />
+                    )}
+                    
+                    <div 
+                        className={`blank-page current ${
+                            animationDirection ? 'moving-to-bottom' : ''
+                        }`}
+                        style={{background: backgroundColor}}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                    >
+                        {stickers.map(sticker => (
+                            <Sticker 
+                                key={sticker.id} 
+                                sticker={sticker} 
+                                onRemove={handleRemoveSticker} 
+                                cardID={currentCardID} 
+                            />
+                        ))}
+                    </div>
+
+                    {currentCardIndex < cards.length - 1 && (
+                        <div 
+                            className={`blank-page next ${
+                                animationDirection === 'right' ? 'moving-to-top' : ''
+                            }`}
+                            style={{background: cards[currentCardIndex + 1]?.color || '#F2F1EA'}}
+                        />
+                    )}
                 </div>
                 <div className="page-buttons">
                     <button className="editPageButton button-3" onClick={toggleEditPageMenu}>Edit page</button>
