@@ -59,8 +59,10 @@
     display: flex;
     align-items: center;
     width: 100%;
-    justify-content: space-between;
+    justify-content: space-around;
     cursor: pointer;
+    position: absolute;
+    bottom: 2rem;
 }
 
 .leftbutton, .rightbutton {

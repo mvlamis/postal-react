@@ -11,25 +11,25 @@ function DefaultSticker({ sticker }) {
 
     if (sticker.type === 'text') {
         return (
-            <div className="sticker addTextSticker" draggable="true" onDragStart={handleDragStart}>
+            <div className="sticker defaultSticker addTextSticker" draggable="true" onDragStart={handleDragStart}>
                 <img src={Text} id="addTextSticker"/>
             </div>
         );
     } else if (sticker.type === 'image') {
         return (
-            <div className="sticker addImageSticker" draggable="true" onDragStart={handleDragStart}>
+            <div className="sticker defaultSticker addImageSticker" draggable="true" onDragStart={handleDragStart}>
                 <img src={Image} />
             </div>
         );
     } else if (sticker.type === 'link') {
         return (
-            <div className="sticker addLinkSticker" draggable="true" onDragStart={handleDragStart}>
+            <div className="sticker defaultSticker addLinkSticker" draggable="true" onDragStart={handleDragStart}>
                 <img src={Link} />
             </div>
         );
     } else if (sticker.type === 'audio') {
         return (
-            <div className="sticker addAudioSticker" draggable="true" onDragStart={handleDragStart}>
+            <div className="sticker defaultSticker addAudioSticker" draggable="true" onDragStart={handleDragStart}>
                 <img src={Audio} />
             </div>
         );

@@ -16,6 +16,7 @@ const MinifiedCard = (card) => {
     const user = cardData.user;
     const stickers = cardData.stickers;
     const color = cardData.color;
+    const timestamp = cardData.timestamp;
 
     const storage = getStorage();
     
@@ -24,9 +25,6 @@ const MinifiedCard = (card) => {
             const userDocRef = doc(db, 'users', user);
             const userDoc = await getDoc(userDocRef);
             const userData = userDoc.data();
-
-            console.log("User: ", userData);
-            console.log("Card: ", cardData);
 
             let photoRef;
             
@@ -177,7 +175,19 @@ const MinifiedCard = (card) => {
             );
         }
     }
-    
+    const formatDate = (timestamp) => {
+        if (!timestamp || !timestamp.seconds) return '';
+        const milliseconds = timestamp.seconds * 1000;
+        const date = new Date(milliseconds);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+        
 
     return (
         <div className="minified-card">
@@ -185,6 +195,7 @@ const MinifiedCard = (card) => {
                 <h1>{cardData.title}</h1>
                 <img src={cardData.profilepicture} alt="profile picture" />
                 <h2>{cardData.username}</h2>
+                <span className="timestamp">{formatDate(timestamp)}</span>
             </div>
             <div className="minified-sticker-book" style={{ background: cardData.color }}>
                 {renderStickers()}

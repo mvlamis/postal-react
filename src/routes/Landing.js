@@ -10,7 +10,12 @@ import SignUpModal from '../components/SignUpModal';
 const Landing = () => {
     const navigate = useNavigate();
     const [authStage, setAuthStage] = useState('');
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
 
+    // Auth state monitoring
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -22,6 +27,20 @@ const Landing = () => {
         return () => unsubscribe();
     }, [navigate]);
 
+    // Window resize handling
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Card position calculation 
     useEffect(() => {
         const cardWidth = 400;
         const cardHeight = 300;
@@ -29,8 +48,8 @@ const Landing = () => {
         const maxAttempts = 1000000;
 
         // Get viewport dimensions
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
+        const viewportWidth = windowSize.width;
+        const viewportHeight = windowSize.height;
 
         // decide how many cards to display based on viewport size
         const numCards = Math.floor((viewportWidth * viewportHeight / (cardWidth * cardHeight)));
@@ -86,7 +105,7 @@ const Landing = () => {
             card.style.transform = `rotate(${position.rotation}deg)`;
             background.appendChild(card);
         });
-    }, []);
+    }, [windowSize]);
 
     const handleSignUp = () => {
         setAuthStage('signup');

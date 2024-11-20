@@ -51,7 +51,8 @@ const SignUpModal = (props) => {
                     email: email,
                     username: username
                 });
-                navigate("/signin");
+                // navigate to profile page
+                navigate("/me");
             })
             .catch((error) => {
                 const errorCode = error.code;

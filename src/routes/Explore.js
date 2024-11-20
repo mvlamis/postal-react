@@ -12,7 +12,10 @@ const Explore = () => {
         const fetchExploreItems = async () => {
             const querySnapshot = await getDocs(collection(db, "explore"));
             const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setExploreItems(items);
+            
+            // Sort items by timestamp in descending order (newest first)
+            const sortedItems = items.sort((a, b) => b.timestamp - a.timestamp);
+            setExploreItems(sortedItems);
         };
 
         fetchExploreItems();
@@ -27,8 +30,7 @@ const Explore = () => {
                 </div>
                 <div className="explore-cards">
                     {exploreItems.map((item, index) => (
-                        console.log(item),
-                        <MinifiedCard key={index} title={item.title} stickers={item.stickers} user={item.user} color={item.color} />
+                        <MinifiedCard key={index} title={item.title} stickers={item.stickers} user={item.user} color={item.color} timestamp={item.timestamp} />
                     ))}
                 </div>
             </div>

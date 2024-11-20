@@ -74,20 +74,36 @@ const SettingsCard = () => {
         setUsername(e.target.value);
     };
     
-    const handleProfilePictureChange = (blob) => {
-        const storageRef = ref(storage, `profile-images/${user.uid}.jpg`);
-        const uploadTask = uploadBytes(storageRef, blob);
-        uploadTask.then(() => {
-            getDownloadURL(storageRef).then((url) => {
-                setUser(prevUser => ({
-                    ...prevUser,
-                    photoURL: url
-                }));
-                console.log('Profile picture uploaded successfully');
+    const handleProfilePictureChange = async (blob) => {
+        try {
+            // Upload to Firebase Storage
+            const storageRef = ref(storage, `profile-images/${user.uid}.jpg`);
+            await uploadBytes(storageRef, blob);
+            
+            // Get the download URL
+            const photoURL = await getDownloadURL(storageRef);
+            
+            // Update Firestore document
+            const userRef = doc(db, 'users', user.uid);
+            await updateDoc(userRef, {
+                photo: true
             });
-        });
-    
-        setShowImageEditor(false);
+            
+            // Update local state
+            setUser(prevUser => ({
+                ...prevUser,
+                photoURL: photoURL
+            }));
+
+            // Clear cached user data to force reload
+            localStorage.removeItem(`user-${user.uid}`);
+            
+            console.log('Profile picture updated successfully');
+            setShowImageEditor(false);
+            
+        } catch (error) {
+            console.error('Error updating profile picture:', error);
+        }
     };
 
     const handleSave = async () => {
@@ -132,6 +148,8 @@ const SettingsCard = () => {
                         await deleteDoc(doc.ref);
                     }
                 });
+                // navigate to home
+                window.location.href = '/';
             } catch (error) {
                 console.error('Error deleting user:', error);
             }
@@ -183,6 +201,12 @@ const SettingsCard = () => {
                 <img src="https://via.placeholder.com/50" alt="texture4" />
             </div>
             <button className="button-3" onClick={() => setShowConfirmDelete(true)}>Delete Account</button>
+            {showConfirmDelete && <ConfirmPopup
+                title="Delete Account"
+                message="Are you sure you want to delete your account? This action cannot be undone."
+                onConfirm={handleUserDelete}
+                onCancel={() => setShowConfirmDelete(false)}
+            />}
         </div>
     );
 }

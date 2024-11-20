@@ -13,3 +13,7 @@
     gap: 1rem;
     width: 100%;
 }
+
+.minified-card {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), inset 0px 1px 4px rgba(0, 0, 0, 0.25);
+}

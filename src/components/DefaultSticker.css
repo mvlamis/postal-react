@@ -1,38 +1,7 @@
-.addTextSticker {
-    /* background-color: yellow;
-    border: 1px solid #ccc; */
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    text-align: center;
-    cursor: move;
-}
-
-.addImageSticker {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    text-align: center;
-    cursor: move;
-}
-
-.addLinkSticker {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    text-align: center;
-    cursor: move;
-}
-
+/* DefaultSticker.css */
+.addTextSticker,
+.addImageSticker,
+.addLinkSticker,
 .addAudioSticker {
     width: 60px;
     height: 60px;
@@ -41,5 +10,41 @@
     align-items: center;
     font-size: 12px;
     text-align: center;
-    cursor: move;
+    cursor: grab;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px dashed #ccc;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+/* Common hover effect for all sticker types */
+.addTextSticker:hover,
+.addImageSticker:hover,
+.addLinkSticker:hover,
+.addAudioSticker:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-style: solid;
+    border-color: #666;
+}
+
+/* Active state when dragging */
+.addTextSticker:active,
+.addImageSticker:active,
+.addLinkSticker:active,
+.addAudioSticker:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+/* Style for the icons inside stickers */
+.defaultSticker img {
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.defaultSticker:hover img {
+    opacity: 1;
 }

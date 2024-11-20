@@ -36,3 +36,11 @@
 .audio-sticker audio {
     width: 100%;
 }
+
+.minified-card-header .timestamp {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+    margin-left: auto;
+}
