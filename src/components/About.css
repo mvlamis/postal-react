@@ -15,6 +15,7 @@ img {
 
 .bio {
     font-style: italic;
+    text-align: center;
 }
 
 .username {
@@ -121,4 +122,41 @@ img {
     100% {
         opacity: 0;
     }
+}
+
+.friend-action-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 150px;
+}
+
+.friend-action-btn.remove-friend {
+    background-color: #ff4444;
+    /* color: white; */
+}
+
+.friend-action-btn.pending {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.friend-action-btn:hover:not(.pending) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.friend-action-btn.remove-friend:hover {
+    color: #ff0000;
+}
+
+.friend-count {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.05);
 }

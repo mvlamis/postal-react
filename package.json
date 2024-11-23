@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@wavesurfer/react": "^1.0.7",
     "dompurify": "^3.1.7",
+    "express": "^4.21.1",
     "firebase": "^10.14.0",
     "firebaseui": "^6.1.0",
     "lucide-react": "^0.460.0",

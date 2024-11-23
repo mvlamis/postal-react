@@ -13,6 +13,7 @@ import Friends from './routes/Friends';
 import Search from './routes/Search';
 import Settings from './routes/Settings';
 import Landing from './routes/Landing';
+import ViewUser from './routes/ViewUser';
 
 
 const router = createHashRouter([
@@ -38,6 +39,10 @@ const router = createHashRouter([
   {
     path: "/settings",
     element: <Settings />,
+  },
+  {
+    path: "/view/:userId",
+    element: <ViewUser />,
   }
 ]);
 

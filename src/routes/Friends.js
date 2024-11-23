@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Friends.css";
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { UserMinus } from 'lucide-react';
 const storage = getStorage();
 
 const Friends = () => {
@@ -44,16 +45,16 @@ const Friends = () => {
             const friendsRef = collection(db, `users/${user.uid}/friends`);
             const q = query(friendsRef, where("status", "==", "accepted"));
             const snapshot = await getDocs(q);
-            
+
             const friendsList = [];
             for (const friendDoc of snapshot.docs) {
                 const friendDocRef = await getDoc(doc(db, "users", friendDoc.id));
-                
+
                 if (friendDocRef.exists()) {
                     const friendData = friendDocRef.data();
                     let photoURL;
                     try {
-                        const photoRef = friendData.photo ? 
+                        const photoRef = friendData.photo ?
                             ref(storage, `profile-images/${friendDoc.id}.jpg`) :
                             ref(storage, 'profile-images/default.jpg');
                         photoURL = await getDownloadURL(photoRef);
@@ -61,7 +62,7 @@ const Friends = () => {
                         console.error("Error loading photo:", error);
                         photoURL = '/default-avatar.png'; // Fallback image
                     }
-                    
+
                     friendsList.push({
                         id: friendDoc.id,
                         username: friendData.username,
@@ -81,14 +82,14 @@ const Friends = () => {
         try {
             setRequestsLoading(true);
             const friendsRef = collection(db, `users/${user.uid}/friends`);
-            const q = query(friendsRef, 
+            const q = query(friendsRef,
                 where("status", "==", "pending"),
                 where("type", "==", "received")
             );
-            
+
             const snapshot = await getDocs(q);
             const requests = [];
-            
+
             for (const doc of snapshot.docs) {
                 const requestData = doc.data();
                 requests.push({
@@ -99,7 +100,7 @@ const Friends = () => {
                     ...requestData
                 });
             }
-            
+
             console.log("Final processed requests:", requests);
             setFriendRequests(requests);
         } catch (error) {
@@ -138,10 +139,21 @@ const Friends = () => {
             // Remove from both collections
             await deleteDoc(doc(db, `users/${user.uid}/friends`, senderId));
             await deleteDoc(doc(db, `users/${senderId}/friends`, user.uid));
-            
+
             fetchFriendRequests();
         } catch (error) {
             console.error("Error rejecting friend request:", error);
+        }
+    };
+
+    const removeFriend = async (friendId) => {
+        try {
+            await deleteDoc(doc(db, `users/${user.uid}/friends`, friendId));
+            await deleteDoc(doc(db, `users/${friendId}/friends`, user.uid));
+            fetchFriends(); // Refresh friends list
+        } catch (error) {
+            console.error("Error removing friend:", error);
+            setError("Failed to remove friend");
         }
     };
 
@@ -169,9 +181,9 @@ const Friends = () => {
                             return (
                                 <div key={request.id} className="request-card">
                                     <div className="user-info">
-                                        <img 
-                                            src={request.photoURL} 
-                                            alt={request.username} 
+                                        <img
+                                            src={request.photoURL}
+                                            alt={request.username}
                                             className="profile-pic"
                                             onError={(e) => e.target.src = '/default-avatar.png'}
                                         />
@@ -181,14 +193,14 @@ const Friends = () => {
                                         </div>
                                     </div>
                                     <div className="request-buttons">
-                                        <button 
+                                        <button
                                             className="accept-btn"
                                             onClick={() => acceptFriendRequest(request.id)}
                                         >
                                             Accept
                                         </button>
                                         <button
-                                            className="reject-btn" 
+                                            className="reject-btn"
                                             onClick={() => rejectFriendRequest(request.id)}
                                         >
                                             Reject
@@ -206,18 +218,35 @@ const Friends = () => {
                     <h2>Friends ({friends.length})</h2>
                     {friends.length > 0 ? (
                         friends.map(friend => (
-                            <div key={friend.id} className="friend-card">
-                                <div className="user-info">
-                                    <img 
-                                        src={friend.photoURL} 
-                                        alt={friend.name} 
-                                        className="profile-pic"
-                                        onError={(e) => e.target.src = '/default-avatar.png'}
-                                    />
-                                    <div className="friend-details">
-                                        <span className="friend-name">{friend.name}</span>
-                                        <span className="friend-username">@{friend.username}</span>
+                            <div
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/view/${friend.id}`);
+                                }}
+                            >
+                                <div key={friend.id} className="friend-card">
+                                    <div className="user-info">
+                                        <img
+                                            src={friend.photoURL}
+                                            alt={friend.name}
+                                            className="profile-pic"
+                                            onError={(e) => e.target.src = '/default-avatar.png'}
+                                        />
+                                        <div className="friend-details">
+                                            <span className="friend-name">{friend.name}</span>
+                                            <span className="friend-username">@{friend.username}</span>
+                                        </div>
                                     </div>
+                                    <button
+                                        className="remove-friend-btn"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFriend(friend.id);
+                                        }}
+                                        title="Remove friend"
+                                    >
+                                        <UserMinus size={20} />
+                                    </button>
                                 </div>
                             </div>
                         ))

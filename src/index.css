@@ -8,6 +8,7 @@ body {
   font-family: 'Instrument Serif', serif;
   background-image: url('./images/woodtexture.jpg');
   color: #333;
+  font-synthesis: none !important;
   /* overflow: hidden; */
 }
 

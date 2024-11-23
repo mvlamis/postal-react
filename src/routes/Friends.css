@@ -115,3 +115,38 @@
     display: flex;
     flex-direction: column;
 }
+
+.remove-friend-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #666;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.friend-card:hover .remove-friend-btn {
+    opacity: 1;
+}
+
+.remove-friend-btn:hover {
+    color: #ff4444;
+    /* background: rgba(255, 68, 68, 0.1); */
+    transform: scale(1.1);
+}
+
+.friend-card {
+    transition: transform 0.2s ease;
+    width: 100%;
+}
+
+.friend-card:hover {
+    cursor: pointer;
+    /* background-color: rgba(0, 0, 0, 0.05); */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
