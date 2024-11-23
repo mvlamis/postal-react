@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import CustomImageEditor from './CustomImageEditor';
 import ConfirmPopup from './ConfirmPopup';
+import { useCustomization } from '../customizationContext';
 
 const SettingsCard = () => {
     const auth = getAuth();
@@ -20,6 +21,9 @@ const SettingsCard = () => {
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [username, setUsername] = useState('');
+    const { settings, setSettings } = useCustomization();
+    const [accentColor, setAccentColor] = useState(settings.accentColor);
+    const [backgroundTexture, setBackgroundTexture] = useState(settings.backgroundTexture);
 
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
@@ -47,7 +51,7 @@ const SettingsCard = () => {
                 }
 
                 const photoURL = await getDownloadURL(photoRef);
-                console.log(userData);
+                // console.log(userData);
                 setUser({
                     uid: user.uid,
                     username: userData.username,
@@ -58,9 +62,22 @@ const SettingsCard = () => {
                 setName(userData.name);
                 setBio(userData.bio);
                 setUsername(userData.username);
+                setAccentColor(userData.accentColor || '#a27b59');
+                setBackgroundTexture(userData.backgroundTexture || 'woodtexture.jpg');
             }
         });
     }, [auth, db, storage]);
+
+    useEffect(() => {
+        // Get root element to modify CSS variables
+        const root = document.documentElement;
+        
+        // Update accent color CSS variable
+        root.style.setProperty('--accent-color', accentColor);
+        
+        // Update background image CSS variable
+        root.style.setProperty('--background-image', `url('/images/${backgroundTexture}')`);
+    }, [accentColor, backgroundTexture]);
 
     const handleNameChange = (e) => {
         setName(e.target.value);
@@ -106,6 +123,15 @@ const SettingsCard = () => {
         }
     };
 
+    const handleAccentColorChange = (e) => {
+        const color = e.target.value;
+        setAccentColor(color);
+    };
+
+    const handleTextureChange = (texture) => {
+        setBackgroundTexture(texture);
+    };
+
     const handleSave = async () => {
         if (user.uid) {
             const userRef = doc(db, 'users', user.uid);
@@ -113,8 +139,11 @@ const SettingsCard = () => {
                 await updateDoc(userRef, {
                     name: name,
                     bio: bio,
-                    username: username
+                    username: username,
+                    accentColor: accentColor,
+                    backgroundTexture: backgroundTexture
                 });
+                setSettings({ accentColor, backgroundTexture });
                 console.log('User information updated successfully');
                 // Update local state
                 setUser(prevUser => ({
@@ -192,13 +221,37 @@ const SettingsCard = () => {
             <button className="button-2" onClick={handleSave}>Save Changes</button>
             <h2>customization</h2>
             <h3>accent color</h3>
-            <input type="color" />
+            <input 
+                type="color" 
+                value={accentColor}
+                onChange={handleAccentColorChange}
+            />
             <h3>background texture</h3>
             <div className="backgroundTextures">
-                <img src="https://via.placeholder.com/50" alt="texture1" />
-                <img src="https://via.placeholder.com/50" alt="texture2" />
-                <img src="https://via.placeholder.com/50" alt="texture3" />
-                <img src="https://via.placeholder.com/50" alt="texture4" />
+                <img 
+                    src="/images/woodtexture.jpg" 
+                    alt="Wood Texture"
+                    onClick={() => handleTextureChange('woodtexture.jpg')}
+                    className={backgroundTexture === 'woodtexture.jpg' ? 'selected' : ''}
+                />
+                <img 
+                    src="/images/leather.jpg" 
+                    alt="Leather Texture"
+                    onClick={() => handleTextureChange('leather.jpg')}
+                    className={backgroundTexture === 'leather.jpg' ? 'selected' : ''}
+                />
+                <img 
+                    src="/images/lenseffect.jpg" 
+                    alt="Lens Effect Texture"
+                    onClick={() => handleTextureChange('lenseffect.jpg')}
+                    className={backgroundTexture === 'lenseffect.jpg' ? 'selected' : ''}
+                />
+                <img 
+                    src="/images/paper.jpg" 
+                    alt="Paper Texture"
+                    onClick={() => handleTextureChange('paper.jpg')}
+                    className={backgroundTexture === 'paper.jpg' ? 'selected' : ''}
+                />
             </div>
             <button className="button-3" onClick={() => setShowConfirmDelete(true)}>Delete Account</button>
             {showConfirmDelete && <ConfirmPopup

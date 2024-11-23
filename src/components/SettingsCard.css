@@ -73,4 +73,19 @@ textarea:focus {
     flex-direction: row;
     gap: 1rem;
     justify-content: space-around;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.backgroundTextures img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    margin: 5px;
+}
+
+.backgroundTextures img.selected {
+    border-color: var(--accent-color);
 }

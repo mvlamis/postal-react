@@ -4,12 +4,21 @@
   box-sizing: border-box;
 }
 
+:root {
+  --navbar-height: 100px;
+  --accent-color: #a27b59;
+  --background-image: url('./images/woodtexture.jpg');
+}
+
 body {
   font-family: 'Instrument Serif', serif;
-  background-image: url('./images/woodtexture.jpg');
+  background-image: var(--background-image);
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: #333;
   font-synthesis: none !important;
-  /* overflow: hidden; */
 }
 
 input {

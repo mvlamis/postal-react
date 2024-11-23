@@ -14,6 +14,7 @@ import Search from './routes/Search';
 import Settings from './routes/Settings';
 import Landing from './routes/Landing';
 import ViewUser from './routes/ViewUser';
+import { CustomizationProvider } from './customizationContext';
 
 
 const router = createHashRouter([
@@ -49,7 +50,9 @@ const router = createHashRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <CustomizationProvider>
+      <RouterProvider router={router} />
+    </CustomizationProvider>
   </React.StrictMode>
 );
 

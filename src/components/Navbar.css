@@ -1,12 +1,8 @@
-:root {
-    --navbar-height: 100px;
-}
-
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #a27b59;
+    background-color: var(--accent-color);
     padding: 1rem;
     height: var(--navbar-height);
     font-size: larger;
